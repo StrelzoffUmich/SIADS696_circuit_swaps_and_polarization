@@ -4,16 +4,19 @@
 # Run it from anywhere; it anchors all paths to its own location:
 #   bash src/supervised/stress_test.sh
 #
-# Expected repo layout (paths resolve automatically; no copying into a scratch dir):
+# Only the two hosted training CSVs are required; TIER 0 GENERATES the rest (the OOD
+# validation corpus and the per-device labels), so a clean clone is self-sufficient:
 #   src/supervised/   supervised_analysis_run.py  cross_device.py  gnn_interaction.py  build_validation_corpus_sv.py
-#   src/mqtloader/    run_pipeline.py + stages            (for the full label+eval tier)
-#   data/datasets/    train_swap_FakeBrisbane.csv  train_pol_FakeBrisbane.csv   (TRAIN set)
-#   data/corpora/validation_qasm/*.qasm                   (the flat OOD corpus)
-# Optional (enable extra tiers): data/xdev_out/labeled/*.csv   (cached cross-device labels)
-#                                torch + torch_geometric      (for the GNN tiers)
+#   src/mqtloader/    run_pipeline.py + stages            (labels the corpus in TIER 0 / 6)
+#   data/datasets/    train_swap_FakeBrisbane.csv  train_pol_FakeBrisbane.csv   (TRAIN set, hosted)
+#   data/corpora/validation_qasm/*.qasm        <- BUILT by TIER 0 (mqt.bench/nwq/qasmbench; needs network)
+#   data/xdev_out/labeled/val_{swap,pol}_FakeBrisbane.csv  <- BUILT by TIER 0 (MQT_Loader labeling)
 #
-# Core sklearn tiers (1-3) must all pass. GNN (4) and cross-device (5-6) self-skip if
-# their prerequisites are absent, and print why.
+# Env knobs:  SKIP_GEN=1  skip TIER 0 (tiers 3/5/6 then self-skip)    REGEN=1  force corpus rebuild
+#             GNN tiers (4-6) need torch + torch_geometric; they self-skip if absent.
+#
+# Core sklearn tiers (1-3) must all pass. GNN (4) and cross-device (5-6) self-skip only if
+# their prerequisites are absent (e.g. SKIP_GEN=1, or no torch), and print why.
 
 set -euo pipefail
 export PYTHONUNBUFFERED=1
@@ -43,6 +46,26 @@ done
 $PY -c "import ast; ast.parse(open('supervised_analysis_run.py').read()); ast.parse(open('cross_device.py').read()); print('syntax OK')"
 
 # ============================================================================
+# TIER 0 generates the regenerable inputs the cross-device tiers consume: the OOD
+# validation corpus (build_validation_corpus_sv.py) and the per-device labels
+# (cross_device.py --phase label). Everything here derives from the two hosted
+# training CSVs + public benchmark suites, so a clean clone is self-sufficient.
+if [ "${SKIP_GEN:-0}" = "1" ]; then
+  say "TIER 0 -- input generation SKIPPED (SKIP_GEN=1); data-dependent tiers self-skip"
+else
+  say "TIER 0 -- generate inputs: OOD validation corpus + FakeBrisbane labels (both arms)"
+  # (a) build the flat OOD corpus if absent (pulls mqt.bench / nwqbench / qasmbench; needs network)
+  if [ "${REGEN:-0}" = "1" ] || [ -z "$(ls -A "$CORPUS"/*.qasm 2>/dev/null)" ]; then
+    run $PY build_validation_corpus_sv.py --out-dir "$CORPUS"
+  else
+    echo "corpus present ($(ls "$CORPUS"/*.qasm 2>/dev/null | wc -l | tr -d ' ') circuits) -> reusing (REGEN=1 to rebuild)"
+  fi
+  # (b) label both arms on FakeBrisbane -> val_{swap,pol}_FakeBrisbane.csv (cached; existing skipped)
+  run $PY cross_device.py --phase label --devices FakeBrisbane --targets route pol \
+      --corpus "$CORPUS" --mqt "$MQT"
+fi
+
+# ============================================================================
 say "TIER 1 -- harness in-distribution (GroupKFold), every target x model path"
 # --swap-csv/--pol-csv default to data/datasets/train_{swap,pol}_FakeBrisbane.csv
 run $PY supervised_analysis_run.py --target route --mode indist --model ridge
@@ -67,8 +90,8 @@ run $PY supervised_analysis_run.py --target z     --mode ood --model ridge
 
 # ============================================================================
 say "TIER 3 -- harness external OOD (train ID / test an external labeled CSV)"
-OOD_SWAP=${OOD_SWAP:-$LABELED/FakeBrisbane_swap.csv}
-OOD_POL=${OOD_POL:-$LABELED/FakeBrisbane_pol.csv}
+OOD_SWAP=${OOD_SWAP:-$LABELED/val_swap_FakeBrisbane.csv}   # produced by TIER 0
+OOD_POL=${OOD_POL:-$LABELED/val_pol_FakeBrisbane.csv}     # produced by TIER 0
 if [ -f "$OOD_SWAP" ]; then
   run $PY supervised_analysis_run.py --ood-csv "$OOD_SWAP" --target route --all --ood-route-col bare_routed_2q
 else
