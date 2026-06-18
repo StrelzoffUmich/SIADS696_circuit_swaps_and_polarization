@@ -1,0 +1,8 @@
+# regenerable / run outputs — not tracked
+qasm/
+data/
+results/
+*.csv
+__pycache__/
+*.pyc
+.DS_Store

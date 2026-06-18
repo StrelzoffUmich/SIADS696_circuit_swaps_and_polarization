@@ -1,0 +1,32 @@
+# data & generated artifacts -- regenerable, not source
+data/*
+# EXCEPT the two canonical training CSVs from the MQT_Loader HPC run: they are the inputs
+# every analysis reads, and the fidelity arm (noisy sim) is expensive / not bit-reproducible.
+# Host them so a fresh clone runs out-of-the-box. See data/datasets/README.md to regenerate.
+!data/datasets/
+data/datasets/*
+!data/datasets/train_swap_FakeBrisbane.csv
+!data/datasets/train_pol_FakeBrisbane.csv
+!data/datasets/README.md
+**/results/
+**/_runs/
+**/xdev_out/
+**/qasm/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+.Rhistory
+
+# backups / scratch
+*-bak
+*.bak
+*.orig

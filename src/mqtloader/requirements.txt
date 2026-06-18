@@ -1,0 +1,16 @@
+# Exact stack used to develop & validate the pipeline. Versions are pinned where the
+# code depends on specific behavior; fake-backend noise models ship inside
+# qiskit-ibm-runtime, so NO network is needed at runtime.
+#
+# mqt.bench is pinned to 2.2.2: the loader relies on this version's module set,
+# ConfigurationOptions schema (seed-only), and per-family randomization behavior.
+# A different version can silently produce a different corpus.
+mqt.bench==2.2.2
+qiskit==2.4.1
+qiskit-aer
+qiskit-ibm-runtime==0.47.0
+numpy
+networkx
+pandas
+# matplotlib only needed for helpers/row_graph.py --draw (visualization)
+matplotlib

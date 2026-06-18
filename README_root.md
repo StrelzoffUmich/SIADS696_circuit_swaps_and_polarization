@@ -1,0 +1,64 @@
+# Quantum Circuit Structure → Routing / Resilience
+
+Does the **pre-routing structure** of a quantum circuit predict (a) its **routing overhead**
+(SWAP insertion under a device coupling map) and (b) its **noise resilience** (mirror-circuit
+polarization)? This repo trains and evaluates supervised models for both, in-distribution
+(5-fold CV), out-of-distribution (leave-one-family and an external mqt/nwq/qasmbench corpus),
+and across IBM fake devices.
+
+Developed with assistance from Claude Opus 4.7/4.8.
+
+## Layout
+
+```
+src/
+  mqtloader/      corpus generation + per-device labeling (run_pipeline.py + stages).
+                  ONE canonical copy; everything points here.
+  supervised/     supervised_analysis_run.py -- shared CV / OOD eval across model families.
+                  diagnostics.py             -- importance, ablation, runtime (split out of the eval engine).
+                  cross_device.py            -- train on one device, test on any other.
+                  build_validation_corpus_sv.py, gnn_interaction.py, stress_test.sh
+                  README.md                  -- commands for every analysis.
+  unsupervised/   unsupervised analyses.
+data/             datasets, corpora, run outputs (gitignored; regenerable from src/).
+```
+
+## Data naming convention
+
+Every labeled artifact is tagged **role × arm × device × N-range** and ships a
+`run_manifest.json` so it is self-describing on disk:
+
+- `role` ∈ `{train, val}` — in-distribution training set vs out-of-distribution validation corpus
+- `arm`  ∈ `{swap, pol}`  — routing overhead (deterministic transpile) vs fidelity (noisy sim)
+
+```
+data/datasets/{role}_{arm}_{device}.csv                       e.g. train_swap_FakeBrisbane.csv
+data/runs/{role}__{arm}__{device}__n{lo}-{hi}__{timestamp}/   (features.csv, *_labels.csv,
+                                                               the dataset, run_manifest.json)
+data/corpora/validation_qasm/                                 flat *.qasm OOD corpus
+data/xdev_out/                                                cross-device labeled CSVs + results
+```
+
+The `run_manifest.json` records role/arm/device/N, the **target column**, and exactly how the
+harness target is derived from it (e.g. `route = log1p(bare_routed_2q)`), so an outsider can
+read a dataset without reading code.
+
+## Quick start
+
+```
+# label a validation corpus on devices and run the cross-device transfer table
+python src/supervised/cross_device.py --devices FakeBrisbane FakeBoston --targets route pol pol_z
+
+# in-distribution 5-fold CV, all model families
+python src/supervised/supervised_analysis_run.py --target route --mode indist --all
+```
+
+Defaults resolve to `src/mqtloader` and `data/` automatically (paths are anchored to the
+script location, not the working directory). See `src/supervised/README.md` for the full
+command set, and run `bash src/supervised/stress_test.sh` to verify a fresh checkout.
+
+## Requirements
+
+Python 3.10+, numpy, pandas, scipy, scikit-learn. GNN: torch, torch_geometric. Labeling /
+corpus build: qiskit 2.4.1, qiskit-aer, qiskit-ibm-runtime, mqt.bench 2.2.2, networkx.
+See `requirements.txt`.
