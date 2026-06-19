@@ -30,3 +30,6 @@ __pycache__/
 *-bak
 *.bak
 *.orig
+
+# stress-test run logs (regenerable; stress_test.sh prints to stdout)
+*.log

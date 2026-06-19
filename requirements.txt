@@ -1,0 +1,48 @@
+# Consolidated Python environment for the full pipeline + stress test
+# (src/supervised/stress_test.sh: corpus build, labeling, sklearn tiers, GNN, cross-device).
+#
+# Pinned to the stack that validated a clean REGEN=1 run. Versions are pinned where the
+# code depends on specific behavior; numpy / networkx / matplotlib are left unpinned
+# (no behavior the pipeline relies on is version-sensitive there).
+#
+# NOT pip-installable, pulled at runtime by build_validation_corpus_sv.py via `git clone`
+# (TIER 0 corpus build) -- requires `git` + network, no entry here:
+#   - nwqbench  : https://github.com/pnnl/nwqbench
+#   - qasmbench : (PNNL QASMBench, cloned by gen_qasmbench)
+#
+# torch / torch_geometric: install per your platform/CUDA. The pins below are the CPU/macOS
+# versions used to validate; for CUDA wheels see https://pytorch.org and
+# https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html
+
+# --- circuit generation & transpilation (loader + corpus) -------------------
+# mqt.bench pinned to 2.2.2: the loader relies on this version's module set,
+# ConfigurationOptions schema (seed-only), and per-family randomization behavior.
+# A different version can silently produce a different corpus.
+mqt.bench==2.2.2
+qiskit==2.4.1
+qiskit-aer==0.17.2
+# fake-backend noise models ship inside qiskit-ibm-runtime; no network needed at runtime.
+qiskit-ibm-runtime==0.47.0
+# transitive (qiskit-ibm-runtime -> requests-ntlm -> cryptography): pinned to a version that
+# ships a prebuilt wheel. Newer cryptography has no wheel for some macOS/x86_64 targets and
+# falls back to a Rust+OpenSSL source build, which fails on a toolchain-free fresh env.
+cryptography==43.0.0
+
+# --- supervised analysis (sklearn tiers 1-3) --------------------------------
+scikit-learn==1.8.0
+scipy==1.17.1
+pandas==2.3.3
+
+# --- GNN paths (tiers 4-6) --------------------------------------------------
+torch==2.2.2
+torch_geometric==2.8.0
+
+# numpy MUST stay <2: torch 2.2.2 is built against the NumPy 1.x C-ABI. With numpy>=2
+# the sklearn tiers still pass, but every torch path (GNN tiers 4-6) dies at the
+# torch<->numpy boundary: "RuntimeError: Numpy is not available". Pinned to the validated 1.x.
+numpy==1.26.4
+
+# --- unpinned (not version-sensitive for this pipeline) ---------------------
+networkx
+# matplotlib only needed for helpers/row_graph.py --draw (visualization)
+matplotlib
