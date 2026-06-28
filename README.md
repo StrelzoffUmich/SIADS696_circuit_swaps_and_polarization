@@ -13,7 +13,6 @@ Developed with assistance from Claude Opus 4.7/4.8.
 ```
 src/
   mqtloader/      corpus generation + per-device labeling (run_pipeline.py + stages).
-                  ONE canonical copy; everything points here.
   supervised/     supervised_analysis_run.py -- shared CV / OOD eval across model families.
                   diagnostics.py             -- importance, ablation, runtime (split out of the eval engine).
                   cross_device.py            -- train on one device, test on any other.
