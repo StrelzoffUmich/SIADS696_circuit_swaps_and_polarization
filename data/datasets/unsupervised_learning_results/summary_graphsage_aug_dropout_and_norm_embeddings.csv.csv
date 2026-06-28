@@ -1,0 +1,4 @@
+best_k,silhouette,n_samples,n_features,pca_dims,method,embedding,bic,n_clusters,noise_points,noise_ratio
+10.0,0.3441411332150319,2827,384,384.0,kmeans,graphsage_aug_dropout_and_norm_embeddings.csv,,,,
+2.0,0.10084743746506285,2827,384,384.0,gmm,graphsage_aug_dropout_and_norm_embeddings.csv,-11391887.60399811,,,
+,,2827,384,,hdbscan,graphsage_aug_dropout_and_norm_embeddings.csv,,6.0,99.0,0.03501945525291829

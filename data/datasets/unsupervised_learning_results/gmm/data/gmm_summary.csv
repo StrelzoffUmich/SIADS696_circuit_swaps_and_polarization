@@ -1,0 +1,2 @@
+best_k,bic,silhouette,n_samples,n_features,pca_dims
+2,-4136635.4743339764,0.8338462680672111,2827,128,128

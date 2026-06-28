@@ -1,0 +1,2 @@
+best_k,silhouette,n_samples,n_features,pca_dims
+5,0.9139789910281854,2827,128,128
