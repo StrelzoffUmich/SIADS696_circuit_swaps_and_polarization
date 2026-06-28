@@ -446,8 +446,7 @@ def run_indist(df, X, target, model_key, n_splits=5, return_oof=False, relative=
         mm = metrics_full(yte, pred)
         for k in _METRIC_ORDER:
             per_fold[k].append(mm[k])
-    # mean + across-fold sd for each metric (was R2-only). Old keys (R2/R2_sd/Spearman/MAE)
-    # are a subset of what's returned now, so existing callers are unaffected.
+    # mean + across-fold sd for each metric; keys include R2/R2_sd/Spearman/MAE.
     summ = {}
     for k in _METRIC_ORDER:
         summ[k] = float(np.nanmean(per_fold[k]))

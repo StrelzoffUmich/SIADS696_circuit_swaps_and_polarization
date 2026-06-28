@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Module developed with AI assistance (Claude). See PROVENANCE.md for the
-# per-component breakdown of reused / lifted-with-citation / AI-assisted code.
+# Module developed with AI assistance (Claude). 
 """
-loader.py — Generate a STRUCTURALLY-DIVERSE MQT Bench QASM corpus.
+loader.py — Generate a MQT Bench QASM corpus across different structures.
 
 Bootstraps a corpus from zero. After running, ./data/qasm/ contains a flat
 directory of .qasm files with structured names that downstream code can parse:
@@ -17,21 +16,13 @@ per-family structural randomization:
 
     qaoa           seed -> Erdos-Renyi cost graph         (count VARYING)
     graphstate     seed + degree -> random regular graph  (count-matched)
-    randomcircuit  qiskit random_circuit(seed) BYPASS      (count varying; MQT
-                                                            hardcodes seed=10)
+    randomcircuit  qiskit random_circuit(seed) BYPASS      (count varying; MQT hardcodes seed=10)
     vqe_two_local  explicit random connected pair-list     (count-matched)
     vqe_su2        explicit random connected pair-list     (count-matched)
     vqe_real_amp   explicit random connected pair-list     (count-matched)
-    vqe_ranged     two_local ansatz, edge count ~ U(LO,HI)*N per seed
-                                                            (count VARYING; fills
-                                                            the mid-density gap)
+    vqe_ranged     two_local ansatz, edge count ~ U(LO,HI)*N per seed(count VARYING; fills    the mid-density gap, provides more info). This family was created via a small change to how VQE works by default in MQTbench.
 
-NOTE on the three pinned VQEs: at a given seed they produce the IDENTICAL
-interaction graph (they differ only in rotation blocks, which don't touch the
-graph). Treat them as ONE structural source for the SWAP target; they differ
-only in the fidelity/entropy channel. vqe_ranged is a count-VARYING structural
-probe for SWAP-arm input coverage; disclose it as a designed coverage choice,
-not a representative workload, and never use it as an OOD test target.
+The three VQE families are treated as one distinct grouping for the purposes of downstream evaluation - see the specific stratification strategy in run_supervised_analysis.py. 
 
 Dedup is on the INTERACTION-GRAPH LAPLACIAN SPECTRUM, not QASM bytes: per-seed
 angle binding makes structurally-identical circuits byte-distinct, so SHA dedup
@@ -90,8 +81,8 @@ def require_deps() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Structural fingerprint (dedup key) — Laplacian spectrum of the interaction
-# graph. Multi-qubit ops clique-expand; barriers/measures excluded. Matches the
+# Structural fingerprint (dedup key) — Laplacian spectrum of the interaction graph. 
+# Multi-qubit ops clique-expand; barriers/measures excluded. Matches the
 # `_topology` graph convention in features.py (source="cliques", unweighted).
 # --------------------------------------------------------------------------- #
 def interaction_spectrum(qc) -> tuple:

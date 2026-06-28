@@ -2,7 +2,7 @@
 """
 mirror_polarization_label.py — noise-resilience label via ROUTE-THEN-MIRROR polarization.
 
-AI-assisted (Claude Opus 4.7/4.8 + Claude Sonnet 4.6), per SIADS 696 GenAI coding-disclosure policy.
+Developed with assistance from Claude Opus 4.7/4.8 and Claude Sonnet 4.6.
 
 METHOD (settled empirically, 2026-05). For each circuit U:
   1. Transpile U ONCE at full optimization onto the device -> U_routed (efficient
@@ -50,9 +50,9 @@ CORPUS NOTE: the fidelity arm needs LOW N. Survival (high S) lives at N=3-5 and 
   qaoa) hold a little longer. The SWAP arm (deterministic routing counts, no simulation)
   uses the full N range via swap_features.py.
 
-Reuses loader_v2 (generator, UNCHANGED) + frf (routing + lockstep noise remap).
+Reuses loader_v2 (generator) + frf (routing + lockstep noise remap).
 
-OPTIMIZATIONS (2026-06, Claude Sonnet 4.6):
+Performance notes:
   - ProcessPoolExecutor: circuits processed in parallel across CPU cores. Each worker
     gets its own device/noise-model copy (Aer state is not fork-safe; we reconstruct
     cheaply per worker from the serialized noise model).
@@ -68,7 +68,6 @@ OPTIMIZATIONS (2026-06, Claude Sonnet 4.6):
   - AerSimulator pool: simulators are keyed by frozenset(active_qubit_indices). A
     simulator built for a 5-qubit active register is reused for every circuit that maps
     to the same active set, avoiding repeated backend construction.
-  - Arguments, return values, and CSV schema are UNCHANGED from the original.
 """
 
 from __future__ import annotations
@@ -88,7 +87,7 @@ from frf import strip_with_map, remap_noise_model
 
 
 # ---------------------------------------------------------------------------
-# Helpers (unchanged logic, same as original)
+# Helpers
 # ---------------------------------------------------------------------------
 
 
@@ -119,7 +118,7 @@ def resolve_device(name):
 def _polariz(counts, target, Nact):
     """Mirror-RB effective polarization, Proctor et al. 2022 Eq. (1).
 
-    Unchanged from original. Returns (S, p_success).
+    Returns (S, p_success).
     """
     tot = sum(counts.values())
     h = [0.0] * (Nact + 1)
@@ -190,7 +189,7 @@ def label_one_batched(
 ) -> list[dict]:
     """Label one circuit across multiple seeds in a single batched simulation call.
 
-    OPTIMIZATION vs original label_one():
+    Three things keep this fast:
       1. Transpilation cache: tU is computed once per unique (qasm_hash, seed, opt)
          triple and stored in transpile_cache (a shared Manager dict when using
          multiprocessing, or a plain dict in single-process mode). For 25 seeds with
@@ -203,9 +202,9 @@ def label_one_batched(
          combination and reused for the whole batch. When called from a worker process,
          the caller pre-builds and passes a simulator pool.
 
-    Arguments and return value schema are a superset of the original: each returned
-    dict adds a 'seed' key. The CSV writer in main() uses extrasaction='ignore', so
-    adding 'seed' to fieldnames is the only schema change needed.
+    Each returned dict carries a 'seed' key. The CSV writer in main() uses
+    extrasaction='ignore', so adding 'seed' to fieldnames is the only schema change
+    needed.
     """
     base = qc.remove_final_measurements(inplace=False)
     N = base.num_qubits
@@ -269,7 +268,7 @@ def label_one_batched(
         # share the same active-qubit map by construction of sim_key).
         _, _, _, _, p2n_ref, _ = group[0]
         nm = remap_noise_model(base_nm, p2n_ref)
-        # OPTIMIZATION: one simulator, one batch run() call for all seeds in group.
+        # One simulator, one batch run() call for all seeds in group.
         nsim = AerSimulator(noise_model=nm)
         batch_circuits = [entry[1] for entry in group]  # mir circuits
 
@@ -282,7 +281,7 @@ def label_one_batched(
             ** 2
         )
 
-        # OPTIMIZATION: submit the whole seed batch in one nsim.run() call.
+        # Submit the whole seed batch in one nsim.run() call.
         # Aer processes the list internally, amortizing C++/Python overhead.
         seed_list = [entry[0] for entry in group]
         job = nsim.run(batch_circuits, shots=shots)
@@ -403,7 +402,7 @@ def main():
         "FakeBoston, FakeNighthawk, FakeSherbrooke). Routing and "
         "noise are device-specific, so labels differ per device.",
     )
-    # OPTIMIZATION: new flag to control parallelism.
+    # Controls parallelism.
     # Default 0 = use all available CPU cores. Set to 1 to disable multiprocessing
     # (useful for debugging or on machines where fork() is problematic).
     ap.add_argument(
@@ -412,7 +411,7 @@ def main():
         default=0,
         help="number of parallel worker processes (0 = all CPUs, 1 = serial/debug)",
     )
-    # OPTIMIZATION: multi-seed support.
+    # Multi-seed support.
     # Three ways to specify seeds (in priority order):
     #   --seeds 0,1,2,...,24     explicit comma list
     #   --n-seeds 25             shorthand: N seeds starting from --seed
@@ -549,7 +548,7 @@ def main():
                     file=sys.stderr,
                 )
     else:
-        # OPTIMIZATION: parallel path via ProcessPoolExecutor.
+        # Parallel path via ProcessPoolExecutor.
         # chunksize=1 keeps scheduling granular so short circuits don't block long ones.
         with ProcessPoolExecutor(max_workers=n_workers) as pool:
             futures = {pool.submit(_worker, item): item for item in work_items}

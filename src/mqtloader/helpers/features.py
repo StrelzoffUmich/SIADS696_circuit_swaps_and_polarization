@@ -16,7 +16,7 @@ The interaction graph G:
     - weight = count of 2-qubit ops between the pair (when weighted=True)
 
 MQT's program_communication uses unweighted G (parallel edges deduplicated).
-Our `fiedler_weighted` is the explicit "weighted" variant Steven proposed.
+Our `fiedler_2q_weighted` is the explicit "weighted" variant Steven proposed.
 """
 from __future__ import annotations
 
@@ -412,11 +412,11 @@ def _connectivity_buildup(qc: QuantumCircuit) -> dict[str, float]:
     }
 
 
-# NOTE: device-topology mismatch features (excess_degree_*, pct_qubits_over_device_degree)
-# were removed on 2026-05-07. The project's scope is algorithmic-level features only —
-# features that don't reference any specific hardware topology so insights generalize
-# across quantum platforms. Hardware-aware features may return as a sensitivity-analysis
-# sub-experiment but are out of scope for the primary analysis.
+# SCOPE: this module emits only algorithmic-level (pre-routing) features — nothing that
+# references a specific hardware topology — so insights generalize across quantum
+# platforms. Device-topology mismatch features (e.g. excess_degree_*,
+# pct_qubits_over_device_degree) are intentionally NOT computed here; they would belong
+# to a hardware-aware sensitivity sub-experiment, out of scope for the primary analysis.
 
 
 def candidate_features(qc: QuantumCircuit) -> dict[str, float]:
@@ -502,8 +502,9 @@ def candidate_features(qc: QuantumCircuit) -> dict[str, float]:
         "time_to_connected": buildup["time_to_connected"],
         # Sanity flag. Mathematically equivalent to (num_2q_gates > 0) — kept
         # as a separate feature for interpretability in SHAP / tree-split
-        # plots downstream. In the current corpus only Deutsch-Jozsa cells
-        # have has_2q_interactions = 0 (14 / 1941 rows in corpus_v2).
+        # plots downstream. It is 0 only for circuits with no 2-qubit
+        # interactions, which is rare-to-absent in the structural corpus
+        # (every family here is entangling).
         "has_2q_interactions": float(has_2q_edges),
         # Parameter-derived features — vary across seed realizations for
         # parameterizable algorithms. For deterministic algos these are

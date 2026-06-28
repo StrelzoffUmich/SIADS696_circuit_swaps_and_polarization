@@ -52,7 +52,7 @@ def model_importances(pipe, feats):
     return None
 
 
-# ---- reporters (compute + print; mirror the old --coef/--ablate/--importance branches) ----
+# ---- reporters (compute + print; mirror the --coef/--ablate/--importance branches) ----
 def report_coef(df, X, feats, target, model_key, relative, *, resolve_target, fit_full):
     """--coef: native coefficients (linear) or feature_importances_ (trees) for one model."""
     if model_key == "gnn":

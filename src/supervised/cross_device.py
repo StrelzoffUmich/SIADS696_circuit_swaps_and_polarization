@@ -110,11 +110,7 @@ def resolve_corpus(corpus):
     So a FLAT corpus (exactly what build_validation_corpus_sv.py writes) already satisfies all
     three. We just resolve to an absolute path and sanity-check it holds circuits. If the
     circuits happen to live in a <corpus>/qasm subdir instead, we point at that subdir (which
-    is itself flat) — same contract. Either way the returned dir contains *.qasm directly.
-
-    (The old stage_corpus copied the flat files into <work>/corpus_staged/qasm/, which ONLY
-    extract_features descends into — the labeler/swapper read the empty parent and saw 0
-    circuits. That self-inflicted layout split was the entire cross-device bug.)"""
+    is itself flat) — same contract. Either way the returned dir contains *.qasm directly."""
     corpus = Path(corpus).resolve()
     if any(corpus.glob("*.qasm")):
         chosen = corpus
