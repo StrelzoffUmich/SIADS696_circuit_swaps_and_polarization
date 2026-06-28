@@ -2,8 +2,7 @@
 """
 run_pipeline.py - one-command runner for the mirror-polarization / SWAP dataset.
 
-The development of this pipeline was assisted with Claude Opus 4.7/4.8. 
-All code was smoke tested by the developer and manually documented
+The development of this pipeline was assisted with Claude Opus 4.7/4.8. All code was smoke tested by Benjamin S and manually documented
 
 Runs the four stages in order, from the reorganized folder layout:
     load_qasm/loader_v2.py                    (0) generate QASM corpus
@@ -22,7 +21,7 @@ EXAMPLE (smoke test: qaoa, N=3-5, clean from scratch):
 EXAMPLE (full fidelity-arm run):
     python run_pipeline.py --qubits 3 20 --k 25 --n-lo 3 --n-hi 5
 
-Skip stages you've already done with --skip-gen / --skip-features / --skip-labels.
+Skip stages you've already done with --skip-gen / --skip-features / --skip-labels. Generally not needed but there for potential crashes.
 """
 from __future__ import annotations
 import argparse, os, subprocess, sys, shutil

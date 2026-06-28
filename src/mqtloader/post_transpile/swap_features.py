@@ -13,13 +13,17 @@ For each circuit it transpiles onto the chosen device and records routing counts
       "how expensive is THIS circuit to route" — the natural cost target, pairs with
       pre-routing structure features.
   - the MIRROR U.P.U^-1         -> mirror_routed_2q, mirror_routed_depth, mirror_n_active
-      matches what the fidelity arm actually executes (so SWAP count and polarization
-      can be related on the same routed object). NOTE: mirror routing is only ~2x bare
-      routing — the transpiler optimizes the whole mirror jointly (seam cancellation,
-      non-symmetric SWAP placement), so it is NOT exactly 2x. Both are recorded so the
-      relationship can be measured rather than assumed.
+      a round-trip routing-cost proxy: U, a random central X-mask P, and U^-1 composed
+      into one circuit and transpiled together. The mask blocks the transpiler from
+      cancelling U.U^-1 down to the identity, so the count reflects a genuine "do the
+      work, then undo it" route. NOTE: this is NOT the same routed object the fidelity
+      arm scores — that arm routes U first and mirrors the already-routed circuit as
+      plain U.U^-1 (no X-mask). Mirror routing here is ~2x bare (not exactly 2x: the
+      transpiler optimizes the whole mirror jointly — seam cancellation, non-symmetric
+      SWAP placement). Both bare and mirror are recorded so the relationship can be
+      measured rather than assumed.
 
-AI-assisted (Claude Opus 4.7/4.8), per SIADS 696 disclosure policy.
+Developed with assistance from Claude Opus 4.7/4.8.
 
     python swap_features.py qasm swap_features.csv --n-lo 3 --n-hi 20 --device FakeBrisbane
 """
@@ -73,7 +77,9 @@ def swap_one(qc, dev, opt, seed, rng):
                pre_routing_depth=base.depth(),
                pre_routing_2q=sum(1 for op in base.data if len(op.qubits) == 2))
 
-    # --- mirror routing (matches what the fidelity arm executes) ---
+    # --- mirror routing: round-trip cost proxy, U.P.U^-1 with a random central X-mask
+    #     (the mask blocks the transpiler from cancelling U.U^-1 to identity; this is a
+    #     routing-cost proxy, NOT the fidelity arm's plain route-then-mirror U.U^-1) ---
     mask = [rng.randint(0, 1) for _ in range(N)]
     mid = QuantumCircuit(N)
     for q, b in enumerate(mask):

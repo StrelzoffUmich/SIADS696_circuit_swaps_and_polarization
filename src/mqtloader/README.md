@@ -37,8 +37,10 @@ python run_pipeline.py --no-naiveMP --qubits 3 20 --k 25 --n-lo 3 --n-hi 20
 python run_pipeline.py --qubits 3 6 --k 25 --n-lo 3 --n-hi 5
 ```
 
-This generates the corpus, extracts features, labels on any Fake Brisbane (default) and joins —
+This generates the corpus, extracts features, labels on Fake Brisbane (default) and joins —
 writing `results/run_<timestamp>/full_dataset.csv`.
+
+For convenience - the canonical runs of the dataset, produced via a 16-20 hour HPC run are pre-seperated into swaps (easy to run) and polarization (extremely long runtime). the relevant file are renamed 
 
 ### Arguments
 
@@ -46,12 +48,12 @@ writing `results/run_<timestamp>/full_dataset.csv`.
 | flag | default | meaning |
 |------|---------|---------|
 | `--algorithms` | all | families to generate (e.g. `qaoa graphstate`); space-separated |
-| `--qubits LO HI` | `3 20` | qubit range for the corpus |
-| `--k` | `25` | seeds (distinct structures) per (family, N) cell |
+| `--qubits LO HI` | `3 20` | qubit range for the corpus - beyond 15 produces noticeable computational slowdown |
+| `--k` | `25` | loader attempts to deliver up to K distinct structures per (family, N) cell |
 
-(Note that some families and cells do not have a full rank of valid distinct seeds at a given qubit count — e.g. there are not 25 distinct N=3 graph states. The loader warns you of these under-sampled cells; it's a property of the circuit space, not an error.)
+(Note that some families and cells do not have a full rank of valid distinct seeds at a given qubit count — e.g. there are not 25 distinct N=3 graph states. The loader warns you of these under-sampled cells inline.)
 
-**Stage 2 — labeling (fidelity arm) or routing (SWAP arm)**
+**Stage 2 — labeling (polarization) or routing (SWAP arm)**
 | flag | default | meaning |
 |------|---------|---------|
 | `--n-lo` / `--n-hi` | `3` / `6` | min/max N for stage 2 (independent of the generation range) |
@@ -128,10 +130,28 @@ python run_pipeline.py --qubits 3 6 --k 25 --n-lo 3 --n-hi 6 --device FakeBrisba
 ```
 python helpers/row_graph.py results/run_<timestamp>/full_dataset.csv <filename> --draw graph.png
 ```
+This functionality was not used extensively due to limited space in the report.
+
+## Noise-remap helpers (`helpers/frf.py`)
+
+`helpers/frf.py` is a small utility module — just two functions — used by the
+labeling stages (`mirror_polarization_label.py`, `swap_features.py`,
+`run_pipeline_with_workers.py`):
+
+- **`strip_with_map(tcirc)`** — rebuilds a routed circuit on only its *active*
+  qubits (renumbered `0..N_active-1`, so the noisy sim stays tractable) and returns
+  the `phys2new` map from physical to stripped qubit index.
+- **`remap_noise_model(base, phys2new)`** — re-keys each physical qubit/edge's real
+  1q / readout / ecr error onto its stripped index using that map, so the noise the
+  simulator applies matches the qubits the gates were actually routed onto.
+
+Together they keep the device noise model in lockstep with the qubit strip; without
+the remap, a gate routed onto physical edge (37,38) would be simulated with whatever
+error sits at (0,1) — the wrong qubits' noise.
 
 ## Output columns
 
-The dataset joins pre-routing features and post-routing labels per circuit:
+The dataset joins structural, pre-routing features and post-routing labels per circuit:
 - **identifiers**: `file`, `algo`, `n` (from features) / `n_qubits` (from labels), `device`
 - **label**: `polarization` (+ `polarization_raw`)
 - **post-routing**: `routed_2q`, `mirror_depth`, `n_active`
