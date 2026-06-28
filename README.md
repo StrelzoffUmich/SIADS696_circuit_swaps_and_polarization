@@ -17,7 +17,11 @@ src/
   supervised/     supervised_analysis_run.py -- shared CV / OOD eval across model families.
                   diagnostics.py             -- importance, ablation, runtime (split out of the eval engine).
                   cross_device.py            -- train on one device, test on any other.
+                  report_artifacts.py        -- single producer of the report-body tables & figures.
                   build_validation_corpus_sv.py, gnn_interaction.py, stress_test.sh
+                  viz_tests/                 -- exploratory + appendix figures (each imports report_artifacts).
+                  sidetests/                 -- standalone scripts answering specific report questions.
+                  reference/                 -- reference GraphSAGE implementation + gate-type puller.
                   README.md                  -- commands for every analysis.
   unsupervised/   unsupervised analyses.
 data/             datasets, corpora, run outputs (gitignored; regenerable from src/).
@@ -37,6 +41,8 @@ data/runs/{role}__{arm}__{device}__n{lo}-{hi}__{timestamp}/   (features.csv, *_l
                                                                the dataset, run_manifest.json)
 data/corpora/validation_qasm/                                 flat *.qasm OOD corpus
 data/xdev_out/                                                cross-device labeled CSVs + results
+data/results/figures/report/                                  report-body figures & tables (report_artifacts.py)
+data/results/figures/exploratory/                             exploratory + appendix figures (viz_tests/, sidetests/)
 ```
 
 The `run_manifest.json` records role/arm/device/N, the **target column**, and exactly how the
