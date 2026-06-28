@@ -21,6 +21,7 @@ src/
                   viz_tests/                 -- exploratory + appendix figures (each imports report_artifacts).
                   sidetests/                 -- standalone scripts answering specific report questions.
                   reference/                 -- reference GraphSAGE implementation + gate-type puller.
+                  1_Normalization_and_Ridge_Lasso_regression.ipynb -- dashboard source (normalization, ridge/lasso).
                   README.md                  -- commands for every analysis.
   unsupervised/   unsupervised analyses.
 data/             datasets, corpora, run outputs (gitignored; regenerable from src/).
