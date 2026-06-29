@@ -90,6 +90,7 @@ command set, and run `bash src/supervised/stress_test.sh` to verify a fresh chec
 
 ## Requirements
 
-Python 3.10+, numpy, pandas, scipy, scikit-learn. GNN: torch, torch_geometric. Labeling /
-corpus build: qiskit 2.4.1, qiskit-aer, qiskit-ibm-runtime, mqt.bench 2.2.2, networkx.
+Python 3.10+, numpy, pandas, scipy, scikit-learn. 
+GNN: torch, torch-geometric, numpy, pandas, qiskit, matplotlib, seaborn, scikit-learn, hdbscan
+Labeling / corpus build: qiskit 2.4.1, qiskit-aer, qiskit-ibm-runtime, mqt.bench 2.2.2, networkx.
 See `requirements.txt`.
