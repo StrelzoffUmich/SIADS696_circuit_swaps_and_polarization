@@ -3,17 +3,15 @@
 # Exit immediately if any command fails
 set -e
 
-# 1. Check if exactly 3 arguments were provided
-if [ "$#" -ne 3 ]; then
-    echo "Error: Missing required paths."
-    echo "Usage: $0 <csv_path> <qasm_dir> <output_dir>"
-    exit 1
-fi
+# Default paths
+DEFAULT_CSV="../../data/datasets/train_swap_FakeBrisbane.csv"
+DEFAULT_QASM="../mqtloader/qasm"
+DEFAULT_OUTPUT="../../data/datasets/embedding_data/"
 
-# 2. Assign arguments to variables
-CSV_ARG="$1"
-QASM_ARG="$2"
-OUTPUT_ARG="$3"
+# Use command-line arguments if provided; otherwise use defaults
+CSV_ARG="${1:-$DEFAULT_CSV}"
+QASM_ARG="${2:-$DEFAULT_QASM}"
+OUTPUT_ARG="${3:-$DEFAULT_OUTPUT}"
 
 # 3. Define the target directory containing your scripts
 SCRIPTS_DIR="./embedding_generation_scripts"

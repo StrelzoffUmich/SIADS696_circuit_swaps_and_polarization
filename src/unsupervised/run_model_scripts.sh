@@ -3,17 +3,16 @@
 # Exit immediately if any command fails
 set -e
 
-# 1. Check if exactly 3 arguments were provided
-if [ "$#" -ne 3 ]; then
-    echo "Error: Missing required paths."
-    echo "Usage: $0 <embedding_dir> <csv_path> <output_dir>"
-    exit 1
-fi
+# 1. Default paths
+DEFAULT_EMB="../../data/datasets/embedding_data/"
+DEFAULT_CSV="../../data/datasets/train_swap_FakeBrisbane.csv"
+OUTPUT_ARG="../../data/datasets/unsupervised_learning_results"
 
-# 2. Assign arguments to variables
-EMB_ARG="$1"
-CSV_ARG="$2"
-OUTPUT_ARG="$3"
+
+# 2. Use command-line arguments if provided; otherwise use defaults
+EMB_ARG="${1:-$DEFAULT_EMB}"
+CSV_ARG="${2:-$DEFAULT_CSV}"
+OUTPUT_ARG="${3:-$OUTPUT_ARG}"
 
 # 3. Define the specific target script
 TARGET_SCRIPT="./model_run_scripts/run_unsupervised_learning_pipeline.py"
