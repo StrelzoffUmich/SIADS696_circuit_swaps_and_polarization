@@ -13,17 +13,21 @@ Developed with assistance from Claude Opus 4.7/4.8.
 ```
 src/
   mqtloader/      corpus generation + per-device labeling (run_pipeline.py + stages).
-  supervised/     supervised_analysis_run.py -- shared CV / OOD eval across model families.
-                  diagnostics.py             -- importance, ablation, runtime (split out of the eval engine).
-                  cross_device.py            -- train on one device, test on any other.
-                  report_artifacts.py        -- single producer of the report-body tables & figures.
+  supervised/     supervised_analysis_run.py      -- shared CV / OOD eval across model families.
+                  diagnostics.py                  -- importance, ablation, runtime (split out of the eval engine).
+                  cross_device.py                 -- train on one device, test on any other.
+                  report_artifacts.py             -- single producer of the report-body tables & figures.
                   build_validation_corpus_sv.py, gnn_interaction.py, stress_test.sh
-                  viz_tests/                 -- exploratory + appendix figures (each imports report_artifacts).
-                  sidetests/                 -- standalone scripts answering specific report questions.
-                  reference/                 -- reference GraphSAGE implementation + gate-type puller.
+                  viz_tests/                      -- exploratory + appendix figures (each imports report_artifacts).
+                  sidetests/                      -- standalone scripts answering specific report questions.
+                  reference/                      -- reference GraphSAGE implementation + gate-type puller.
                   1_Normalization_and_Ridge_Lasso_regression.ipynb -- dashboard source (normalization, ridge/lasso).
-                  README.md                  -- commands for every analysis.
-  unsupervised/   unsupervised analyses.
+                  README.md                       -- commands for every analysis.
+  unsupervised/   generate_all_embeddings.sh      -- bash script to automate embedding generation via scripts in embedding_generation_scripts
+                  run_model_scripts.sh            -- bash script to run all the model scripts in model_run_scripts
+                  embedding_generation_scripts/    -- scripts to generate embeddings of DAGs created from QASM files
+                  model_run_scripts/               -- scripts to run the kmeans, gmm, and hsbscan analysis of the embedding files
+                  unsupervised_learning_results_walkthrough.ipynb  -- post embedding notebook that goes through analysis process and paper prep
 data/             datasets, corpora, run outputs (gitignored; regenerable from src/).
 ```
 
@@ -57,6 +61,12 @@ python src/supervised/cross_device.py --devices FakeBrisbane FakeBoston --target
 
 # in-distribution 5-fold CV, all model families
 python src/supervised/supervised_analysis_run.py --target route --mode indist --all
+
+# generation for the GNN embeddings can be run by: (this will take a long while
+bash src/unsupervised/generate_all_embeddings.sh
+
+# run unsupervised models agains the GNN embeddigns
+bash src/unsupervised/run_model_scripts.sh
 ```
 
 Defaults resolve to `src/mqtloader` and `data/` automatically (paths are anchored to the
