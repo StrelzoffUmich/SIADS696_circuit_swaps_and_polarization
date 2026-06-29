@@ -1,0 +1,120 @@
+OPENQASM 2.0;
+include "qelib1.inc";
+gate ryy(param0) q0,q1 { sxdg q0; sxdg q1; cx q0,q1; rz(param0) q1; cx q0,q1; sx q0; sx q1; }
+gate cs q0,q1 { t q0; cx q0,q1; tdg q1; cx q0,q1; t q1; }
+gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }
+gate dcx q0,q1 { cx q0,q1; cx q1,q0; }
+gate ccz q0,q1,q2 { h q2; ccx q0,q1,q2; h q2; }
+gate xx_minus_yy(param0,param1) q0,q1 { rz(-param1) q1; sdg q0; sx q0; s q0; s q1; cx q0,q1; ry(0.5*param0) q0; ry((-0.5)*param0) q1; cx q0,q1; sdg q1; sdg q0; sxdg q0; s q0; rz(param1) q1; }
+gate rcccx q0,q1,q2,q3 { h q3; t q3; cx q2,q3; tdg q3; h q3; cx q0,q3; t q3; cx q1,q3; tdg q3; cx q0,q3; t q3; cx q1,q3; tdg q3; h q3; t q3; cx q2,q3; tdg q3; h q3; }
+gate iswap q0,q1 { s q0; s q1; h q0; cx q0,q1; cx q1,q0; h q1; }
+gate r(param0,param1) q0 { u(param0,-pi/2 + param1,pi/2 - param1) q0; }
+gate csdg q0,q1 { tdg q0; cx q0,q1; t q1; cx q0,q1; tdg q1; }
+gate ecr q0,q1 { s q0; sx q1; cx q0,q1; x q0; }
+qreg q[10];
+creg meas[10];
+cswap q[1],q[2],q[7];
+rccx q[8],q[4],q[0];
+ryy(0.29979204306497825) q[3],q[9];
+cp(2.0060450301331882) q[5],q[6];
+cs q[4],q[2];
+csx q[8],q[1];
+cy q[6],q[5];
+cry(1.5248206938546114) q[7],q[0];
+y q[3];
+u1(1.6595187624529764) q[9];
+rzx(3.01785318731052) q[8],q[4];
+tdg q[7];
+ch q[5],q[6];
+cp(2.4430263361283067) q[3],q[1];
+dcx q[9],q[2];
+rx(0.8469702846560745) q[0];
+rccx q[1],q[6],q[7];
+swap q[0],q[5];
+ccx q[9],q[8],q[4];
+y q[3];
+ry(5.814922700800016) q[2];
+ccz q[4],q[7],q[5];
+rccx q[8],q[6],q[3];
+y q[1];
+cu3(4.374826896952806,2.454574827829072,0.624155661393078) q[9],q[2];
+z q[0];
+ch q[3],q[1];
+cp(2.38469434475516) q[5],q[9];
+cz q[8],q[0];
+ccx q[6],q[4],q[7];
+u2(5.706314596108045,2.9869798889980776) q[2];
+u3(4.78214233740528,1.2810285979557052,1.5027995952251227) q[8];
+cx q[1],q[7];
+u(0.7612530209899168,4.062580890515939,3.6570879563004093) q[5];
+x q[9];
+crx(5.155193638959083) q[6],q[3];
+crz(1.068895063443008) q[0],q[4];
+cswap q[4],q[5],q[3];
+rccx q[7],q[2],q[9];
+rccx q[1],q[0],q[8];
+u2(2.617030453026704,0.44509939696452305) q[9];
+ryy(4.4658487227748) q[4],q[2];
+p(1.4322055884927176) q[0];
+z q[6];
+xx_minus_yy(1.3090152465407772,1.581844592892158) q[1],q[8];
+rccx q[5],q[7],q[3];
+crx(0.695072181465635) q[5],q[0];
+rcccx q[1],q[6],q[3],q[8];
+dcx q[2],q[4];
+iswap q[7],q[9];
+swap q[0],q[4];
+rcccx q[1],q[8],q[2],q[5];
+p(1.0467329040617015) q[9];
+z q[3];
+swap q[6],q[7];
+u(3.661355508961759,1.505202155316757,0.0935950296811818) q[9];
+crx(3.2194325562327593) q[4],q[8];
+ccz q[5],q[7],q[1];
+swap q[6],q[3];
+x q[8];
+sxdg q[3];
+sdg q[4];
+ryy(4.262010496908081) q[9],q[5];
+cswap q[1],q[7],q[2];
+xx_minus_yy(6.091760700599397,4.597388625238259) q[0],q[6];
+cs q[2],q[4];
+s q[3];
+ccz q[1],q[6],q[0];
+ccx q[5],q[9],q[8];
+ccx q[3],q[1],q[7];
+rccx q[4],q[9],q[2];
+ccz q[5],q[6],q[8];
+r(4.549442981687989,2.3739058414684178) q[0];
+c3sqrtx q[8],q[6],q[2],q[1];
+ccz q[3],q[4],q[7];
+ccx q[0],q[5],q[9];
+r(0.42809848467110617,5.576677666128581) q[0];
+ccx q[8],q[5],q[6];
+ccz q[9],q[4],q[3];
+csdg q[2],q[1];
+ry(5.32049684132568) q[7];
+rccx q[9],q[8],q[5];
+u2(4.505954394610514,1.224837572555785) q[1];
+csdg q[0],q[7];
+xx_minus_yy(0.7079841747757171,1.141673244337355) q[4],q[3];
+ecr q[2],q[6];
+ccz q[4],q[0],q[2];
+ccx q[3],q[1],q[7];
+r(4.029694268986482,2.7335391828494306) q[9];
+ccz q[6],q[8],q[5];
+c3sqrtx q[1],q[5],q[6],q[2];
+ccz q[4],q[0],q[3];
+cu1(5.575363425323361) q[8],q[9];
+sxdg q[7];
+barrier q[0],q[1],q[2],q[3],q[4],q[5],q[6],q[7],q[8],q[9];
+measure q[0] -> meas[0];
+measure q[1] -> meas[1];
+measure q[2] -> meas[2];
+measure q[3] -> meas[3];
+measure q[4] -> meas[4];
+measure q[5] -> meas[5];
+measure q[6] -> meas[6];
+measure q[7] -> meas[7];
+measure q[8] -> meas[8];
+measure q[9] -> meas[9];

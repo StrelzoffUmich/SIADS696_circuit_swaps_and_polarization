@@ -1,0 +1,20 @@
+OPENQASM 2.0;
+include "qelib1.inc";
+gate ccz q0,q1,q2 { h q2; ccx q0,q1,q2; h q2; }
+qreg q[4];
+creg meas[4];
+cswap q[3],q[0],q[1];
+sx q[2];
+cswap q[2],q[0],q[3];
+cswap q[2],q[3],q[1];
+cswap q[0],q[3],q[2];
+cry(3.9175016711702146) q[0],q[2];
+ccz q[0],q[2],q[3];
+u3(0.39175395962332904,4.029583729416905,5.357250123160488) q[1];
+ccx q[2],q[0],q[1];
+rccx q[2],q[0],q[3];
+barrier q[0],q[1],q[2],q[3];
+measure q[0] -> meas[0];
+measure q[1] -> meas[1];
+measure q[2] -> meas[2];
+measure q[3] -> meas[3];

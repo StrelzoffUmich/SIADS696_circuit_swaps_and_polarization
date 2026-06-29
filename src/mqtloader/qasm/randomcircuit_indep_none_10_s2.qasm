@@ -1,0 +1,88 @@
+OPENQASM 2.0;
+include "qelib1.inc";
+gate xx_plus_yy(param0,param1) q0,q1 { rz(param1) q0; sdg q1; sx q1; s q1; s q0; cx q1,q0; ry((-0.5)*param0) q1; ry((-0.5)*param0) q0; cx q1,q0; sdg q0; sdg q1; sxdg q1; s q1; rz(-param1) q0; }
+gate rcccx q0,q1,q2,q3 { h q3; t q3; cx q2,q3; tdg q3; h q3; cx q0,q3; t q3; cx q1,q3; tdg q3; cx q0,q3; t q3; cx q1,q3; tdg q3; h q3; t q3; cx q2,q3; tdg q3; h q3; }
+gate iswap q0,q1 { s q0; s q1; h q0; cx q0,q1; cx q1,q0; h q1; }
+gate ccz q0,q1,q2 { h q2; ccx q0,q1,q2; h q2; }
+gate ecr q0,q1 { s q0; sx q1; cx q0,q1; x q0; }
+gate ryy(param0) q0,q1 { sxdg q0; sxdg q1; cx q0,q1; rz(param0) q1; cx q0,q1; sx q0; sx q1; }
+gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }
+qreg q[10];
+creg meas[10];
+c3sqrtx q[1],q[5],q[7],q[3];
+c3sqrtx q[4],q[2],q[9],q[6];
+xx_plus_yy(2.656434447191589,3.978414914254461) q[0],q[8];
+rccx q[9],q[3],q[8];
+rcccx q[1],q[2],q[0],q[5];
+cswap q[7],q[4],q[6];
+c3sqrtx q[8],q[9],q[3],q[5];
+rcccx q[2],q[4],q[1],q[6];
+cz q[0],q[7];
+rcccx q[0],q[1],q[4],q[7];
+cswap q[2],q[5],q[9];
+rccx q[6],q[3],q[8];
+c3sqrtx q[5],q[4],q[0],q[6];
+rccx q[9],q[7],q[8];
+s q[3];
+iswap q[2],q[1];
+rz(2.4478993660528126) q[1];
+ccx q[4],q[8],q[0];
+x q[3];
+rcccx q[7],q[5],q[9],q[6];
+ccz q[5],q[9],q[2];
+ccx q[7],q[3],q[0];
+c3sqrtx q[4],q[8],q[6],q[1];
+rcccx q[6],q[8],q[9],q[5];
+t q[4];
+rcccx q[1],q[0],q[7],q[2];
+rcccx q[7],q[9],q[0],q[3];
+sdg q[1];
+rcccx q[6],q[5],q[8],q[4];
+rcccx q[4],q[1],q[3],q[0];
+crz(3.6975967711559035) q[9],q[7];
+rcccx q[8],q[2],q[5],q[6];
+c3sqrtx q[7],q[3],q[0],q[6];
+rcccx q[2],q[4],q[9],q[1];
+cu1(5.979794923931584) q[5],q[8];
+rcccx q[4],q[2],q[5],q[8];
+crx(1.698882032858265) q[0],q[7];
+ecr q[6],q[3];
+u1(4.491077496121981) q[1];
+ccx q[4],q[6],q[1];
+rccx q[0],q[3],q[9];
+rcccx q[2],q[8],q[7],q[5];
+ccx q[1],q[8],q[3];
+x q[2];
+rcccx q[0],q[4],q[9],q[6];
+ryy(4.141581850363864) q[1],q[6];
+cswap q[5],q[8],q[0];
+cx q[4],q[7];
+cy q[2],q[3];
+sdg q[9];
+ccx q[7],q[4],q[3];
+rxx(0.3693334675528037) q[9],q[1];
+rzx(1.817276639534093) q[2],q[8];
+cswap q[0],q[5],q[6];
+cswap q[6],q[2],q[8];
+c3sqrtx q[1],q[0],q[7],q[3];
+iswap q[4],q[5];
+h q[9];
+crx(2.906197336818501) q[9],q[2];
+ccz q[3],q[8],q[5];
+ccz q[7],q[1],q[6];
+ccz q[8],q[2],q[1];
+c3sqrtx q[9],q[4],q[0],q[5];
+cswap q[3],q[7],q[6];
+rcccx q[0],q[4],q[6],q[3];
+rcccx q[9],q[5],q[2],q[1];
+barrier q[0],q[1],q[2],q[3],q[4],q[5],q[6],q[7],q[8],q[9];
+measure q[0] -> meas[0];
+measure q[1] -> meas[1];
+measure q[2] -> meas[2];
+measure q[3] -> meas[3];
+measure q[4] -> meas[4];
+measure q[5] -> meas[5];
+measure q[6] -> meas[6];
+measure q[7] -> meas[7];
+measure q[8] -> meas[8];
+measure q[9] -> meas[9];

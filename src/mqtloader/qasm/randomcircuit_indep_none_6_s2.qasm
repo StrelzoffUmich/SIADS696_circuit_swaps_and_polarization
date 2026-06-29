@@ -1,0 +1,54 @@
+OPENQASM 2.0;
+include "qelib1.inc";
+gate xx_minus_yy(param0,param1) q0,q1 { rz(-param1) q1; sdg q0; sx q0; s q0; s q1; cx q0,q1; ry(0.5*param0) q0; ry((-0.5)*param0) q1; cx q0,q1; sdg q1; sdg q0; sxdg q0; s q0; rz(param1) q1; }
+gate r(param0,param1) q0 { u(param0,-pi/2 + param1,pi/2 - param1) q0; }
+gate rcccx q0,q1,q2,q3 { h q3; t q3; cx q2,q3; tdg q3; h q3; cx q0,q3; t q3; cx q1,q3; tdg q3; cx q0,q3; t q3; cx q1,q3; tdg q3; h q3; t q3; cx q2,q3; tdg q3; h q3; }
+gate ccz q0,q1,q2 { h q2; ccx q0,q1,q2; h q2; }
+qreg q[6];
+creg meas[6];
+cswap q[4],q[5],q[1];
+xx_minus_yy(0.40937589561693843,0.03534951896620935) q[2],q[3];
+s q[0];
+sdg q[3];
+cswap q[5],q[4],q[1];
+sdg q[2];
+u1(6.206158148190595) q[0];
+cswap q[4],q[5],q[0];
+z q[3];
+y q[1];
+x q[3];
+r(3.9170736970502706,4.9140549170233685) q[2];
+rcccx q[1],q[5],q[0],q[4];
+sxdg q[5];
+p(4.815855810633561) q[2];
+cry(4.226543263518502) q[1],q[3];
+cry(5.028114962602957) q[0],q[4];
+id q[2];
+p(3.9953715362846935) q[5];
+ccz q[0],q[4],q[3];
+y q[1];
+tdg q[2];
+sx q[0];
+r(3.8058490761757056,3.593296517122968) q[4];
+z q[4];
+z q[2];
+sxdg q[3];
+ccx q[0],q[5],q[1];
+ccz q[2],q[4],q[1];
+sdg q[2];
+rx(1.3655992634523515) q[3];
+ccz q[4],q[1],q[5];
+u3(3.6544199976607024,3.5125052577866334,3.2487418570328614) q[0];
+z q[0];
+z q[5];
+cswap q[3],q[1],q[2];
+u3(3.4784878951639002,4.076744898338701,1.484378725469563) q[2];
+u2(4.799317896814473,0.9770826905695131) q[0];
+c3sqrtx q[4],q[3],q[1],q[5];
+barrier q[0],q[1],q[2],q[3],q[4],q[5];
+measure q[0] -> meas[0];
+measure q[1] -> meas[1];
+measure q[2] -> meas[2];
+measure q[3] -> meas[3];
+measure q[4] -> meas[4];
+measure q[5] -> meas[5];

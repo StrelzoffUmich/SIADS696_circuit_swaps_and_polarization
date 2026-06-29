@@ -1,0 +1,137 @@
+OPENQASM 2.0;
+include "qelib1.inc";
+gate rcccx q0,q1,q2,q3 { h q3; t q3; cx q2,q3; tdg q3; h q3; cx q0,q3; t q3; cx q1,q3; tdg q3; cx q0,q3; t q3; cx q1,q3; tdg q3; h q3; t q3; cx q2,q3; tdg q3; h q3; }
+gate cs q0,q1 { t q0; cx q0,q1; tdg q1; cx q0,q1; t q1; }
+gate csdg q0,q1 { tdg q0; cx q0,q1; t q1; cx q0,q1; tdg q1; }
+gate ccz q0,q1,q2 { h q2; ccx q0,q1,q2; h q2; }
+gate iswap q0,q1 { s q0; s q1; h q0; cx q0,q1; cx q1,q0; h q1; }
+gate r(param0,param1) q0 { u(param0,-pi/2 + param1,pi/2 - param1) q0; }
+gate ryy(param0) q0,q1 { sxdg q0; sxdg q1; cx q0,q1; rz(param0) q1; cx q0,q1; sx q0; sx q1; }
+gate ecr q0,q1 { s q0; sx q1; cx q0,q1; x q0; }
+gate dcx q0,q1 { cx q0,q1; cx q1,q0; }
+gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }
+gate xx_minus_yy(param0,param1) q0,q1 { rz(-param1) q1; sdg q0; sx q0; s q0; s q1; cx q0,q1; ry(0.5*param0) q0; ry((-0.5)*param0) q1; cx q0,q1; sdg q1; sdg q0; sxdg q0; s q0; rz(param1) q1; }
+gate xx_plus_yy(param0,param1) q0,q1 { rz(param1) q0; sdg q1; sx q1; s q1; s q0; cx q1,q0; ry((-0.5)*param0) q1; ry((-0.5)*param0) q0; cx q1,q0; sdg q0; sdg q1; sxdg q1; s q1; rz(-param1) q0; }
+qreg q[11];
+creg meas[11];
+rcccx q[10],q[9],q[7],q[5];
+cs q[0],q[8];
+ccx q[4],q[1],q[2];
+csdg q[3],q[6];
+ccx q[4],q[1],q[7];
+ccz q[2],q[5],q[6];
+id q[0];
+c3sqrtx q[8],q[10],q[3],q[9];
+sdg q[8];
+cswap q[1],q[10],q[2];
+rx(0.8469351858225675) q[7];
+sx q[9];
+sxdg q[4];
+crz(4.724256649052973) q[5],q[0];
+csdg q[3],q[6];
+c3sqrtx q[3],q[10],q[4],q[8];
+c3sqrtx q[6],q[2],q[0],q[7];
+cswap q[1],q[9],q[5];
+iswap q[0],q[5];
+ccx q[2],q[3],q[10];
+c3sqrtx q[9],q[8],q[1],q[7];
+r(4.591369250459519,0.03300767853989018) q[6];
+u3(4.074934941617801,2.110407559444686,6.169461698176049) q[4];
+rzz(3.3871534887363213) q[0],q[4];
+z q[7];
+rcccx q[1],q[9],q[2],q[5];
+ry(0.5609956376650672) q[6];
+p(4.082282402623984) q[10];
+iswap q[8],q[3];
+rccx q[9],q[10],q[6];
+ccz q[4],q[3],q[2];
+ccx q[5],q[8],q[7];
+rzz(1.4383430877322474) q[0],q[1];
+s q[3];
+u(6.251772016914275,0.07592392821841118,1.8133233653958039) q[6];
+sdg q[0];
+c3sqrtx q[9],q[1],q[10],q[4];
+ccx q[2],q[7],q[5];
+rzz(5.348610981882187) q[3],q[4];
+ccx q[8],q[10],q[1];
+rccx q[5],q[7],q[2];
+cswap q[6],q[0],q[9];
+sdg q[1];
+ccz q[10],q[5],q[4];
+rzz(2.245558895555926) q[7],q[8];
+cu(6.096677708860606,6.179014003423178,5.552748882344631,3.401250016457152) q[6],q[9];
+sdg q[2];
+cz q[0],q[3];
+c3sqrtx q[0],q[1],q[8],q[10];
+cswap q[2],q[5],q[9];
+rccx q[3],q[4],q[6];
+t q[7];
+ryy(2.0558929246417974) q[2],q[1];
+r(6.164357429080629,1.6398613702064235) q[3];
+ccx q[4],q[8],q[0];
+p(2.9621153282615715) q[5];
+s q[7];
+ccz q[10],q[9],q[6];
+rccx q[6],q[3],q[7];
+rccx q[9],q[0],q[2];
+ecr q[5],q[4];
+cswap q[10],q[1],q[8];
+cp(4.056338856707861) q[0],q[6];
+dcx q[8],q[9];
+rzx(1.0059537767697693) q[3],q[10];
+tdg q[1];
+swap q[4],q[2];
+rzz(6.234096391252102) q[5],q[7];
+rccx q[2],q[10],q[1];
+rccx q[0],q[9],q[8];
+cswap q[5],q[3],q[7];
+sxdg q[6];
+r(3.9637845835871874,0.9708422925510335) q[4];
+r(5.364752377514836,0.3122480268369325) q[8];
+r(6.123287139314347,2.4781756128966936) q[6];
+t q[3];
+ccz q[9],q[10],q[1];
+h q[5];
+sxdg q[4];
+xx_minus_yy(0.8929337509578327,5.126635201565229) q[0],q[7];
+ryy(0.01952502747469312) q[4],q[9];
+sxdg q[1];
+cswap q[3],q[8],q[10];
+rcccx q[0],q[6],q[5],q[2];
+c3sqrtx q[9],q[2],q[10],q[7];
+rccx q[4],q[3],q[0];
+rx(5.755776518887158) q[5];
+cswap q[8],q[1],q[6];
+dcx q[1],q[8];
+p(4.309329378870508) q[7];
+cswap q[10],q[2],q[5];
+x q[6];
+rcccx q[0],q[9],q[3],q[4];
+u1(0.9689187366000587) q[6];
+y q[9];
+cu1(3.63142814382471) q[3],q[4];
+cz q[5],q[2];
+ccx q[0],q[8],q[10];
+ry(5.560526477012811) q[7];
+cswap q[2],q[9],q[7];
+ecr q[4],q[0];
+ccz q[3],q[5],q[10];
+rx(2.139995310980477) q[1];
+ryy(0.5309910805578556) q[8],q[6];
+cu1(4.477064677956216) q[4],q[3];
+sx q[1];
+ecr q[5],q[9];
+ccz q[0],q[6],q[8];
+xx_plus_yy(0.4419999646605175,4.3942202677440765) q[2],q[10];
+barrier q[0],q[1],q[2],q[3],q[4],q[5],q[6],q[7],q[8],q[9],q[10];
+measure q[0] -> meas[0];
+measure q[1] -> meas[1];
+measure q[2] -> meas[2];
+measure q[3] -> meas[3];
+measure q[4] -> meas[4];
+measure q[5] -> meas[5];
+measure q[6] -> meas[6];
+measure q[7] -> meas[7];
+measure q[8] -> meas[8];
+measure q[9] -> meas[9];
+measure q[10] -> meas[10];
