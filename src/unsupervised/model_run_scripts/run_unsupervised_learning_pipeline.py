@@ -267,7 +267,7 @@ if __name__ == "__main__":
     # Check if the correct number of arguments were passed
     if len(sys.argv) < 4:
         print(
-            "Usage: python embeddings_with_autoencoder.py <csv_path> <qasm_dir> <output_dir>"
+            "Usage: python embeddings_with_autoencoder.py <embedding_dir> <csv_path> <output_dir>"
         )
         sys.exit(1)
 
