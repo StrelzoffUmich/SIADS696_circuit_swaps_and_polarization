@@ -34,13 +34,12 @@ scipy==1.17.1
 pandas==2.3.3
 
 # --- GNN paths (tiers 4-6) --------------------------------------------------
-torch==2.2.2
-torch_geometric==2.8.0
-
-# numpy MUST stay <2: torch 2.2.2 is built against the NumPy 1.x C-ABI. With numpy>=2
-# the sklearn tiers still pass, but every torch path (GNN tiers 4-6) dies at the
-# torch<->numpy boundary: "RuntimeError: Numpy is not available". Pinned to the validated 1.x.
-numpy==1.26.4
+torch==2.12.0
+torch-geometric==2.7.0
+numpy==2.4.4
+matplotlib==3.10.8
+seaborn==0.13.2
+hdbscan==0.8.44
 
 # --- unpinned (not version-sensitive for this pipeline) ---------------------
 networkx
