@@ -15,3 +15,5 @@ This directory contains scripts for converting QASM files into DAG representatio
 
 - **`embeddings_with_GraphCL.py`**  
   Baseline implementation using a GraphCL-style contrastive learning approach for generating embeddings from QASM-derived DAGs.
+
+## scripts intended to be run through the generate_all_embeddings.sh script one level up
