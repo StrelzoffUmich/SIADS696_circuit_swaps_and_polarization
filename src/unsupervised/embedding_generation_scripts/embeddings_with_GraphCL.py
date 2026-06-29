@@ -443,13 +443,13 @@ def run_graphcl_pipeline(
         axis=1,
     )
 
-    final_df_path = Path(output_path).with_name("gae_embeddings.csv")
+    final_df_path = Path(output_path).with_name("GraphCL_embeddings.csv")
     final_df.to_csv(final_df_path, index=False)
 
     # Save training history
     loss_df = pd.DataFrame(loss_history)
 
-    loss_output_path = Path(output_path).with_name("gae_training_loss.csv")
+    loss_output_path = Path(output_path).with_name("GraphCL_training_loss.csv")
     loss_df.to_csv(loss_output_path, index=False)
 
     print("Saved training history to:", loss_output_path)
