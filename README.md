@@ -54,6 +54,7 @@ harness target is derived from it (e.g. `route = log1p(bare_routed_2q)`), so an 
 read a dataset without reading code.
 
 ## Data naming convention for unsupervised learning tasks
+```
 data/datasets/embedding_data/embeddings/{GNN_type}_{complexity_levels}.csv
 data/datasets/embedding_data/loss/{GNN_type}_{complexity_levels}_loss.csv
 data/datasets/unsupervised_learning_results/
@@ -61,6 +62,7 @@ data/datasets/unsupervised_learning_results/
     * ALL_cluster_assignments.csv
     * ALL_summary_comparison.csv
     * embedding_comparison_ranked.csv
+```
 
 ## Quick start
 
