@@ -1,0 +1,4 @@
+best_k,silhouette,n_samples,n_features,pca_dims,method,embedding,bic,n_clusters,noise_points,noise_ratio
+4.0,0.5964248215931657,2827,128,128.0,kmeans,gae_embeddings.csv,,,,
+3.0,0.565810865847267,2827,128,128.0,gmm,gae_embeddings.csv,-3826439.0069054193,,,
+,,2827,128,,hdbscan,gae_embeddings.csv,,10.0,90.0,0.0318358684117439
