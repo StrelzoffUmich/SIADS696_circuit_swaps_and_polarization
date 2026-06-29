@@ -1,3 +1,16 @@
+"""
+This script converts quantum circuits (QASM files) into graph representations and trains
+a Graph Contrastive Learning (GraphCL) model to learn circuit embeddings.
+
+Each circuit is represented as a graph where nodes correspond to quantum gates and
+edges capture execution dependencies between operations. During training, graph
+augmentations are applied to create different views of the same circuit for
+contrastive learning.
+
+After training, the script generates graph-level embeddings for each circuit and
+saves both the embeddings and training loss history for later analysis.
+"""
+
 import torch
 import torch.nn.functional as F
 import numpy as np
