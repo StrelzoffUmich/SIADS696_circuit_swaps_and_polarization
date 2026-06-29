@@ -55,8 +55,12 @@ read a dataset without reading code.
 
 ## Data naming convention for unsupervised learning tasks
 ```
+# GNN embedding csv files
 data/datasets/embedding_data/embeddings/{GNN_type}_{complexity_levels}.csv
+# GNN embedding contrastive loss by epoch files
 data/datasets/embedding_data/loss/{GNN_type}_{complexity_levels}_loss.csv
+
+# unsupervised analysis via kmeans, gmm, hdbscan and compared by ARI
 data/datasets/unsupervised_learning_results/
   * most files are temporary files, but summary analysis files post models and ARI are:
     * ALL_cluster_assignments.csv
